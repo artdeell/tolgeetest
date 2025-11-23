@@ -41,11 +41,14 @@ jobs:
     needs: check_strings
     if: needs.check_strings.outputs.has_new_strings == 'true'
     steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v6
+      with:
+        node-version: 22
     - name: Upload translations to Tolgee
       env:
          tolgee_token: ${{ secrets.tolgee_token }}
       run: |
-        sudo apt install npm
         npm install @tolgee/cli
         export PATH=$PWD/node_modules/.bin:$PATH
         tolgee login "$tolgee_token"
