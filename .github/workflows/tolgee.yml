@@ -8,8 +8,10 @@ on:
     branches: [ "master" ]
 
 jobs:
-  job_check_strings:
+  check_strings:
     runs-on: ubuntu-latest
+    outputs:
+      has_new_strings: ${{ steps.check_strings.outputs.has_new_strings }}
     steps:
       # https://stackoverflow.com/a/77036975
       - name: Calculate fetch-depth
@@ -30,6 +32,7 @@ jobs:
         id: check_strings
         run: |
           if [ $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep values/strings.xml | wc -l) -gt 0 ]; then 
+             echo "This push has changes to strings.xml. Pushing new translations..."
              echo "has_new_strings=true" > $GITHUB_OUTPUT; 
           fi
         
