@@ -11,10 +11,27 @@ jobs:
   job_check_strings:
     runs-on: ubuntu-latest
     steps:
+      # https://stackoverflow.com/a/77036975
+      - name: Calculate fetch-depth
+        id: pre-checkout
+        env:
+          COMMITS: ${{ toJson(github.event.commits) }}
+        run: |
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            COUNT=$(( $(echo "$COMMITS" | jq length) + 1 ))
+          else
+            COUNT=1
+          fi
+          echo "fetch-depth=$COUNT" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: ${{ steps.pre-checkout.outputs.fetch-depth }}
       - name: Check if strings.xml changed
         id: check_strings
-        run: if [ $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep values/strings.xml | wc -l) -gt 0 ]; then echo "has_new_strings=1" > $GITHUB_OUTPUT; fi
+        run: |
+          if [ $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep values/strings.xml | wc -l) -gt 0 ]; then 
+             echo "has_new_strings=1" > $GITHUB_OUTPUT; 
+          fi
         
   upload-translation:
     runs-on: ubuntu-latest
