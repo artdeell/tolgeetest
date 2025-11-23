@@ -38,7 +38,7 @@ jobs:
         
   upload-translation:
     runs-on: ubuntu-latest
-    needs: job_check_strings
+    needs: check_strings
     if: needs.check_strings.outputs.has_new_strings == true
     steps:
     - name: Use Node.js
