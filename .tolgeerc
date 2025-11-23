@@ -11,8 +11,4 @@
        }
     ]
   },
-  "pull": {
-    "path": ".",
-    "fileStructureTemplate": "./app/src/main/res/values-{languageTag}/strings.{extension}"
-  }
 }
